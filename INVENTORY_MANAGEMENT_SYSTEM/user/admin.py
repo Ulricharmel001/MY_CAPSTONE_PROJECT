@@ -29,4 +29,4 @@ class CustomUserAdmin(UserAdmin):
 # Register the Profile model
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
-    list_display = ('user', 'full_name', 'created_at')
+    list_display = ('user', 'full_name', 'created_at')  # now valid

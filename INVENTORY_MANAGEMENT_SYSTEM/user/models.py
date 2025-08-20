@@ -5,6 +5,7 @@ from django.db import models
 from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.utils import timezone
 
 # Extend Django's built-in AbstractUser to allow customization later
 class CustomUser(AbstractUser):
@@ -24,7 +25,7 @@ class CustomUser(AbstractUser):
 class Profile(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
     bio = models.TextField(blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)  # track creation time
+    created_at = models.DateTimeField(default=timezone.now)  # track creation time
 
     # method to get full name from related user
     def full_name(self):
