@@ -28,7 +28,7 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 # Use the custom user model
-AUTH_USER_MODEL = "users.CustomUser"
+AUTH_USER_MODEL = "user.CustomUser"
 
 # JWT Authentication settings
 REST_FRAMEWORK = {
