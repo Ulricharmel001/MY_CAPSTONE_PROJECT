@@ -22,13 +22,13 @@ class CustomUser(AbstractUser):
 
 # A separate Profile model linked to each user
 class Profile(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    bio = models.TextField(blank=True, null=True)
-    phone = models.CharField(max_length=20, blank=True, null=True)
-    address = models.CharField(max_length=255, blank=True, null=True)
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+    bio = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)  # track creation time
 
-    def __str__(self):
-        return f"{self.user.email} Profile"
+    # method to get full name from related user
+    def full_name(self):
+        return f"{self.user.first_name} {self.user.last_name}"
 
 
 # SIGNAL: Automatically create a profile when a new user is created
