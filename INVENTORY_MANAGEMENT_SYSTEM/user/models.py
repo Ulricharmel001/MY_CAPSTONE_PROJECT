@@ -24,7 +24,7 @@ class CustomUser(AbstractUser):
 # A separate Profile model linked to each user
 class Profile(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-    bio = models.TextField(blank=True)
+    bio = models.TextField(blank=True)  
     created_at = models.DateTimeField(default=timezone.now)  # track creation time
 
     # method to get full name from related user
