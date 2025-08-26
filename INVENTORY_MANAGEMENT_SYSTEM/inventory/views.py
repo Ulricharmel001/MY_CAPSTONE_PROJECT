@@ -1,198 +1,135 @@
-from django.shortcuts import render
-
-# Create your views here.
-from django.shortcuts import get_object_or_404
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-import json
-from .models import Store, Category, Supplier, Customer, Product
+from django.shortcuts import render, get_object_or_404, redirect
+from django import forms
+from .models import Store, Category
 
 # ----------------------
-# Store Views
+# Django Form for Store
 # ----------------------
+class StoreForm(forms.ModelForm):
+    """Form to create or edit a Store"""
+    class Meta:
+        model = Store
+        fields = ['name', 'location']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Store Name'}),
+            'location': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Location'}),
+        }
 
-@csrf_exempt
+# ----------------------
+# List all stores and add a new store
+# ----------------------
 def store_list(request):
-    """GET all stores or POST a new store"""
-    if request.method == 'GET':
-        stores = Store.objects.all()
-        data = [{"id": s.id, "name": s.name, "location": s.location} for s in stores]
-        return JsonResponse(data, safe=False)
-    elif request.method == 'POST':
-        body = json.loads(request.body)
-        store = Store.objects.create(name=body['name'], location=body.get('location',''))
-        return JsonResponse({"id": store.id, "name": store.name, "location": store.location}, status=201)
+    """
+    Handles displaying all stores and adding a new store via form.
+    GET: Render template with all stores and empty form.
+    POST: Process form submission to create a new store.
+    """
+    if request.method == 'POST':
+        form = StoreForm(request.POST)
+        if form.is_valid():
+            form.save()  # Save new store
+            return redirect('store-list')  # Redirect to refresh page
+    else:
+        form = StoreForm()  # Empty form for GET request
 
-@csrf_exempt
+    stores = Store.objects.all()  # Fetch all stores
+    return render(request, 'inventory/store_list.html', {'stores': stores, 'form': form})
+
+# ----------------------
+# View, edit, or delete a single store
+# ----------------------
 def store_detail(request, pk):
-    """GET, PUT, DELETE a single store"""
+    """
+    Handles displaying and updating a single store.
+    GET: Show store details with pre-filled form.
+    POST: Update store using form submission.
+    """
     store = get_object_or_404(Store, pk=pk)
-    if request.method == 'GET':
-        return JsonResponse({"id": store.id, "name": store.name, "location": store.location})
-    elif request.method == 'PUT':
-        body = json.loads(request.body)
-        store.name = body.get('name', store.name)
-        store.location = body.get('location', store.location)
-        store.save()
-        return JsonResponse({"id": store.id, "name": store.name, "location": store.location})
-    elif request.method == 'DELETE':
-        store.delete()
-        return JsonResponse({"message": "Store deleted"}, status=204)
 
+    if request.method == 'POST':
+        form = StoreForm(request.POST, instance=store)
+        if form.is_valid():
+            form.save()  # Update store
+            return redirect('store-list')
+    else:
+        form = StoreForm(instance=store)  # Pre-filled form
+
+    return render(request, 'inventory/store_detail.html', {'store': store, 'form': form})
 
 # ----------------------
-# Category Views
+# Django Form for Category
 # ----------------------
+class CategoryForm(forms.ModelForm):
+    """Form to create or edit a Category"""
+    class Meta:
+        model = Category
+        fields = ['name', 'store']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Category Name'}),
+            'store': forms.Select(attrs={'class': 'form-select'}),
+        }
 
-@csrf_exempt
+# ----------------------
+# List all categories and add a new category
+# ----------------------
 def category_list(request):
-    """GET all categories or POST a new category"""
-    if request.method == 'GET':
-        categories = Category.objects.all()
-        data = [{"id": c.id, "name": c.name, "store": c.store.name} for c in categories]
-        return JsonResponse(data, safe=False)
-    elif request.method == 'POST':
-        body = json.loads(request.body)
-        store = get_object_or_404(Store, pk=body['store_id'])
-        category = Category.objects.create(name=body['name'], store=store)
-        return JsonResponse({"id": category.id, "name": category.name, "store": category.store.name}, status=201)
+    """
+    GET: Render template showing all categories and a form to add a new category.
+    POST: Process form to create a new category.
+    """
+    if request.method == 'POST':
+        form = CategoryForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('category_list')
+    else:
+        form = CategoryForm()
 
-@csrf_exempt
+    categories = Category.objects.all()
+    return render(request, 'inventory/category_list.html', {'categories': categories, 'form': form})
+
+# ----------------------
+# View, edit, or delete a single category
+# ----------------------
 def category_detail(request, pk):
-    """GET, PUT, DELETE a single category"""
+    """
+    GET: Render template showing a single category with pre-filled form.
+    POST: Update category with submitted form data.
+    """
     category = get_object_or_404(Category, pk=pk)
-    if request.method == 'GET':
-        return JsonResponse({"id": category.id, "name": category.name, "store": category.store.name})
-    elif request.method == 'PUT':
-        body = json.loads(request.body)
-        category.name = body.get('name', category.name)
-        category.save()
-        return JsonResponse({"id": category.id, "name": category.name, "store": category.store.name})
-    elif request.method == 'DELETE':
+
+    if request.method == 'POST':
+        form = CategoryForm(request.POST, instance=category)
+        if form.is_valid():
+            form.save()
+            return redirect('category_list')
+    else:
+        form = CategoryForm(instance=category)
+
+    return render(request, 'inventory/category_detail.html', {'category': category, 'form': form})
+
+
+
+    # ----------------------
+# Delete a store
+# ----------------------
+def store_delete(request, pk):
+    """Delete a store and redirect to store list"""
+    store = get_object_or_404(Store, pk=pk)
+    if request.method == 'POST':
+        store.delete()
+        return redirect('store-list')
+    return render(request, 'inventory/store_confirm_delete.html', {'store': store})
+
+
+# ----------------------
+# Delete a category
+# ----------------------
+def category_delete(request, pk):
+    """Delete a category and redirect to category list"""
+    category = get_object_or_404(Category, pk=pk)
+    if request.method == 'POST':
         category.delete()
-        return JsonResponse({"message": "Category deleted"}, status=204)
+        return redirect('category_list')
+    return render(request, 'inventory/category_confirm_delete.html', {'category': category})
 
-
-# ----------------------
-# Supplier Views
-# ----------------------
-
-@csrf_exempt
-def supplier_list(request):
-    """GET all suppliers or POST a new supplier"""
-    if request.method == 'GET':
-        suppliers = Supplier.objects.all()
-        data = [{"id": s.id, "name": s.name, "email": s.email, "phone": s.phone} for s in suppliers]
-        return JsonResponse(data, safe=False)
-    elif request.method == 'POST':
-        body = json.loads(request.body)
-        supplier = Supplier.objects.create(
-            name=body['name'],
-            email=body.get('email'),
-            phone=body.get('phone'),
-            address=body.get('address','')
-        )
-        return JsonResponse({"id": supplier.id, "name": supplier.name}, status=201)
-
-@csrf_exempt
-def supplier_detail(request, pk):
-    """GET, PUT, DELETE a single supplier"""
-    supplier = get_object_or_404(Supplier, pk=pk)
-    if request.method == 'GET':
-        return JsonResponse({"id": supplier.id, "name": supplier.name, "email": supplier.email, "phone": supplier.phone})
-    elif request.method == 'PUT':
-        body = json.loads(request.body)
-        supplier.name = body.get('name', supplier.name)
-        supplier.email = body.get('email', supplier.email)
-        supplier.phone = body.get('phone', supplier.phone)
-        supplier.save()
-        return JsonResponse({"id": supplier.id, "name": supplier.name})
-    elif request.method == 'DELETE':
-        supplier.delete()
-        return JsonResponse({"message": "Supplier deleted"}, status=204)
-
-
-# ----------------------
-# Customer Views
-# ----------------------
-
-@csrf_exempt
-def customer_list(request):
-    """GET all customers or POST a new customer"""
-    if request.method == 'GET':
-        customers = Customer.objects.all()
-        data = [{"id": c.id, "name": c.name, "email": c.email} for c in customers]
-        return JsonResponse(data, safe=False)
-    elif request.method == 'POST':
-        body = json.loads(request.body)
-        customer = Customer.objects.create(
-            name=body['name'],
-            email=body.get('email'),
-            phone=body.get('phone'),
-            address=body.get('address','')
-        )
-        return JsonResponse({"id": customer.id, "name": customer.name}, status=201)
-
-@csrf_exempt
-def customer_detail(request, pk):
-    """GET, PUT, DELETE a single customer"""
-    customer = get_object_or_404(Customer, pk=pk)
-    if request.method == 'GET':
-        return JsonResponse({"id": customer.id, "name": customer.name, "email": customer.email})
-    elif request.method == 'PUT':
-        body = json.loads(request.body)
-        customer.name = body.get('name', customer.name)
-        customer.email = body.get('email', customer.email)
-        customer.save()
-        return JsonResponse({"id": customer.id, "name": customer.name})
-    elif request.method == 'DELETE':
-        customer.delete()
-        return JsonResponse({"message": "Customer deleted"}, status=204)
-
-
-# ----------------------
-# Product Views
-# ----------------------
-
-@csrf_exempt
-def product_list(request):
-    """GET all products or POST a new product"""
-    if request.method == 'GET':
-        products = Product.objects.all()
-        data = [{"id": p.id, "name": p.name, "sku": p.sku, "category": p.category.name if p.category else None} for p in products]
-        return JsonResponse(data, safe=False)
-    elif request.method == 'POST':
-        body = json.loads(request.body)
-        category = get_object_or_404(Category, pk=body['category_id'])
-        supplier = get_object_or_404(Supplier, pk=body['supplier_id'])
-        product = Product.objects.create(
-            sku=body['sku'],
-            name=body['name'],
-            category=category,
-            supplier=supplier,
-            unit_price=body['unit_price'],
-            selling_price=body['selling_price']
-        )
-        return JsonResponse({"id": product.id, "name": product.name}, status=201)
-
-@csrf_exempt
-def product_detail(request, pk):
-    """GET, PUT, DELETE a single product"""
-    product = get_object_or_404(Product, pk=pk)
-    if request.method == 'GET':
-        return JsonResponse({
-            "id": product.id,
-            "name": product.name,
-            "sku": product.sku,
-            "category": product.category.name if product.category else None,
-            "supplier": product.supplier.name if product.supplier else None
-        })
-    elif request.method == 'PUT':
-        body = json.loads(request.body)
-        product.name = body.get('name', product.name)
-        product.sku = body.get('sku', product.sku)
-        product.save()
-        return JsonResponse({"id": product.id, "name": product.name})
-    elif request.method == 'DELETE':
-        product.delete()
-        return JsonResponse({"message": "Product deleted"}, status=204)

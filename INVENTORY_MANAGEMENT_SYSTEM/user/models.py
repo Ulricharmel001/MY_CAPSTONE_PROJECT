@@ -31,15 +31,3 @@ class Profile(models.Model):
     def full_name(self):
         return f"{self.user.first_name} {self.user.last_name}"
 
-
-# SIGNAL: Automatically create a profile when a new user is created
-@receiver(post_save, sender=CustomUser)
-def create_user_profile(sender, instance, created, **kwargs):
-    if created:  # Only create when new user is registered
-        Profile.objects.create(user=instance)
-
-
-# SIGNAL: Save profile whenever user is updated
-@receiver(post_save, sender=CustomUser)
-def save_user_profile(sender, instance, **kwargs):
-    instance.profile.save()
