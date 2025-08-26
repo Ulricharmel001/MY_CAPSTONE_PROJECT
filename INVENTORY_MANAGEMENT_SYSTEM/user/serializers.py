@@ -1,31 +1,65 @@
 from rest_framework import serializers
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import Profile
 
+# Dynamically get the custom user model
 User = get_user_model()
 
-# Serializer for user registration
+
+"""
+RegisterSerializer
+------------------
+Handles user registration.
+- Accepts username, email, first/last name, date_of_birth, and profile_photo.
+- Requires password + confirm password for validation.
+- Automatically hashes password and creates a linked Profile.
+"""
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
+    password2 = serializers.CharField(write_only=True)  # confirm password
 
     class Meta:
         model = User
-        fields = ["id", "username", "email", "password", "date_of_birth", "profile_photo"]
+        fields = [
+            "id", "username", "email", "first_name", "last_name",
+            "date_of_birth", "profile_photo", "password", "password2"
+        ]
+
+    def validate(self, data):
+        # Ensure both passwords match
+        if data["password"] != data["password2"]:
+            raise serializers.ValidationError("Passwords do not match.")
+        return data
 
     def create(self, validated_data):
-        # Create user with hashed password
+        # Remove confirm password before creating user
+        validated_data.pop("password2")
+
+        # Create user with Django's built-in create_user (hashes password)
         user = User.objects.create_user(
-            username=validated_data["username"],
-            email=validated_data["email"],
-            password=validated_data["password"],
+            username=validated_data.get("username"),
+            email=validated_data.get("email"),
+            first_name=validated_data.get("first_name"),
+            last_name=validated_data.get("last_name"),
             date_of_birth=validated_data.get("date_of_birth"),
             profile_photo=validated_data.get("profile_photo"),
+            password=validated_data.get("password"),
         )
+
+        # Automatically create a Profile for the new user
+        Profile.objects.create(user=user)
         return user
 
 
-# Serializer for login response (returns tokens)
+"""
+LoginSerializer
+---------------
+Handles user authentication.
+- Takes email + password.
+- Validates credentials using Django's `authenticate`.
+- If valid, returns JWT tokens (access + refresh).
+"""
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True)
@@ -33,8 +67,6 @@ class LoginSerializer(serializers.Serializer):
     refresh = serializers.CharField(read_only=True)
 
     def validate(self, data):
-        from django.contrib.auth import authenticate
-
         user = authenticate(email=data["email"], password=data["password"])
         if not user:
             raise serializers.ValidationError("Invalid email or password")
@@ -48,9 +80,14 @@ class LoginSerializer(serializers.Serializer):
         }
 
 
-# Serializer for Profile
+"""
+ProfileSerializer
+-----------------
+Handles retrieving and updating profile information.
+Keeps the profile data (bio, created_at) separate from the core User model.
+"""
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
-        fields = ["bio", "phone", "address"]
-
+        fields = ["bio", "created_at"]
+        read_only_fields = ["created_at"]

@@ -1,36 +1,53 @@
-# create views here
-from django.shortcuts import render
-from rest_framework import generics, status
-from rest_framework.response import Response
-from rest_framework.permissions import AllowAny, IsAuthenticated
-from django.contrib.auth import get_user_model
-from rest_framework.views import APIView
-from .serializers import RegisterSerializer, LoginSerializer, ProfileSerializer
+from django.shortcuts import render, redirect
+from django.contrib.auth import login, logout, authenticate
+from django.contrib import messages
+from .forms import CustomUserCreationForm, CustomAuthenticationForm
+from django.contrib.auth.decorators import login_required
 
-User = get_user_model()
-
-# User Registration API
-class RegisterView(generics.CreateAPIView):
-    queryset = User.objects.all()
-    serializer_class = RegisterSerializer
-    permission_classes = [AllowAny]  # Anyone can register
-
-
-# User Login API (JWT authentication)
-class LoginView(APIView):
-    permission_classes = [AllowAny]
-
-    def post(self, request):
-        serializer = LoginSerializer(data=request.data)
-        if serializer.is_valid():
-            return Response(serializer.validated_data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+# ----------------------
+# Register View
+# ----------------------
+def register_view(request):
+    if request.method == "POST":
+        form = CustomUserCreationForm(request.POST, request.FILES)
+        if form.is_valid():
+            user = form.save()
+            messages.success(request, "Account created successfully. You can now log in.")
+            return redirect("login")
+    else:
+        form = CustomUserCreationForm()
+    return render(request, "user/register.html", {"form": form})
 
 
-# Profile view (requires authentication)
-class ProfileView(generics.RetrieveUpdateAPIView):
-    serializer_class = ProfileSerializer
-    permission_classes = [IsAuthenticated]
+# ----------------------
+# Login View
+# ----------------------
+def login_view(request):
+    if request.method == "POST":
+        form = CustomAuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+            messages.success(request, f"Welcome back, {user.first_name}!")
+            return redirect("profile")  # redirect to profile/dashboard
+    else:
+        form = CustomAuthenticationForm()
+    return render(request, "user/login.html", {"form": form})
 
-    def get_object(self):
-        return self.request.user.profile  # Get logged-in user’s profile
+
+# ----------------------
+# Logout View
+# ----------------------
+def logout_view(request):
+    logout(request)
+    messages.info(request, "You have been logged out.")
+    return redirect("login")
+
+
+# ----------------------
+# Profile View (requires login)
+# ----------------------
+
+@login_required
+def profile_view(request):
+    return render(request, "user/profile.html")
