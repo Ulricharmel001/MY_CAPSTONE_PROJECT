@@ -133,3 +133,44 @@ def category_delete(request, pk):
         return redirect('category_list')
     return render(request, 'inventory/category_confirm_delete.html', {'category': category})
 
+
+from .models import Product
+from .forms import ProductForm
+
+# ----------------------
+# List all products + add new
+# ----------------------
+def product_list(request):
+    if request.method == "POST":
+        form = ProductForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("product_list")
+    else:
+        form = ProductForm()
+    products = Product.objects.select_related("category", "supplier").all()
+    return render(request, "inventory/product_list.html", {"products": products, "form": form})
+
+# ----------------------
+# Update a product
+# ----------------------
+def product_detail(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+    if request.method == "POST":
+        form = ProductForm(request.POST, instance=product)
+        if form.is_valid():
+            form.save()
+            return redirect("product_list")
+    else:
+        form = ProductForm(instance=product)
+    return render(request, "inventory/product_detail.html", {"product": product, "form": form})
+
+# ----------------------
+# Delete a product
+# ----------------------
+def product_delete(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+    if request.method == "POST":
+        product.delete()
+        return redirect("product_list")
+    return render(request, "inventory/product_confirm_delete.html", {"product": product})

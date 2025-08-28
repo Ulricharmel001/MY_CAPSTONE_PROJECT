@@ -13,7 +13,7 @@ class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
         """
         Create and save a regular user with the given email and password.
-        email is required and normalized (lowercase, trimmed).
+        email` is required and normalized (lowercase, trimmed).
         password` is hashed using Django’s built-in security system.
         """
         if not email:
@@ -50,7 +50,7 @@ We extend Django’s `AbstractUser` to customize authentication:
 - Add optional fields like `date_of_birth` and `profile_photo`.
 """
 class CustomUser(AbstractUser):
-    username = models.CharField(max_length=150, unique=True)  # still required for uniqueness
+    username = models.CharField(max_length=150, unique=True) #still required for uniqueness, similar to email
     email = models.EmailField(unique=True)  # email must be unique
     date_of_birth = models.DateField(null=True, blank=True)
     profile_photo = models.ImageField(upload_to="profile_pics/", null=True, blank=True)

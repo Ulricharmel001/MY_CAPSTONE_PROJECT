@@ -1,15 +1,17 @@
+# stock/urls.py
 from django.urls import path
-from .views import (
-    StockListCreateView, StockDetailView,
-    StockTransactionListCreateView, StockTransactionDetailView
-)
+from . import views
 
 urlpatterns = [
-    # Stock endpoints
-    path('stock/', StockListCreateView.as_view(), name='stock-list'),
-    path('stock/<int:pk>/', StockDetailView.as_view(), name='stock-detail'),
+    # Stock CRUD
+    path("", views.stock_dashboard, name="stock_dashboard"),
+    path("add/", views.add_stock, name="add_stock"),
+    path("update/<int:pk>/", views.update_stock, name="update_stock"),
+    path("delete/<int:pk>/", views.delete_stock, name="delete_stock"),
 
-    # StockTransaction endpoints
-    path('stock-transactions/', StockTransactionListCreateView.as_view(), name='transaction-list'),
-    path('stock-transactions/<int:pk>/', StockTransactionDetailView.as_view(), name='transaction-detail'),
+    # StockTransaction CRUD
+    path("transactions/", views.transaction_list, name="transaction_list"),
+    path("transactions/add/", views.transaction_add, name="transaction_add"),
+    path("transactions/update/<int:pk>/", views.update_transaction, name="update_transaction"),
+    path("transactions/delete/<int:pk>/", views.delete_transaction, name="transaction_delete"),
 ]

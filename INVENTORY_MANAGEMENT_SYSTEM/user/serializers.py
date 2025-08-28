@@ -23,7 +23,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         model = User
         fields = [
             "id", "username", "email", "first_name", "last_name",
-            "date_of_birth", "profile_photo", "password", "password2"
+            "date_of_birth", "password", "password2"
         ]
 
     def validate(self, data):

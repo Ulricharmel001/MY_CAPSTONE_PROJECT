@@ -11,6 +11,6 @@ class PurchaseOrderAdmin(admin.ModelAdmin):
 
 @admin.register(PurchaseItem)
 class PurchaseItemAdmin(admin.ModelAdmin):
-    list_display = ('quantity', 'cost_price')
+    list_display = ('quantity',)
     
 

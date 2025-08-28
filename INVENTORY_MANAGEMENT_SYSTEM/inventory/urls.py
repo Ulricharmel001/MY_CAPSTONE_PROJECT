@@ -20,4 +20,10 @@ urlpatterns = [
     path('stores/<int:pk>/delete/', views.store_delete, name='store-delete'),
     path('categories/<int:pk>/delete/', views.category_delete, name='category-delete'),
 
+    # product
+    path("products/", views.product_list, name="product_list"),
+    path("products/<int:pk>/", views.product_detail, name="product_detail"),
+    path("products/<int:pk>/delete/", views.product_delete, name="product_delete"),
+    
+
 ]

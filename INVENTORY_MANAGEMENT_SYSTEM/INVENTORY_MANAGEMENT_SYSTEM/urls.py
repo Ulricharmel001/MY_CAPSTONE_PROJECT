@@ -16,6 +16,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from stock import views as stock_views
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -24,6 +26,8 @@ urlpatterns = [
     path('api/purchase/', include('purchase.urls')),
     path('api/stock/', include('stock.urls')),
     path('api/user/', include('user.urls')),
+
+ 
     
 ]
 
