@@ -81,7 +81,7 @@ class Product(models.Model):
     )
     supplier = models.ForeignKey(
         Supplier,
-        on_delete=models.SET_NULL,         # If supplier is deleted → keep product but set NULL
+        on_delete=models.SET_NULL,         
         null=True,
         related_name="products"
     )

@@ -55,10 +55,8 @@ INSTALLED_APPS = [
     # My apps
     'inventory',
     'user',
-    'sales',
     'stock',
-    'purchase',
-    'report'
+    'report',
 
 
 ]
