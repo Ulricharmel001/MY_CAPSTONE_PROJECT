@@ -13,10 +13,67 @@
 <!-- Add Product Form -->
 <div class="card p-3 mb-4 shadow-sm">
   <h5>Add New Product</h5>
-  <form method="post">
+  <form method="post" class="row g-3">
     {% csrf_token %}
-    {{ form.as_p }}
-    <button class="btn btn-primary">Save</button>
+    
+    <div class="col-md-6">
+      {{ form.sku.label_tag }}  
+      {{ form.sku }}
+    </div>
+
+    <div class="col-md-6">
+      {{ form.name.label_tag }}  
+      {{ form.name }}
+    </div>
+
+    <div class="col-md-6">
+      {{ form.category.label_tag }}  
+      {{ form.category }}
+    </div>
+
+    <div class="col-md-6">
+      {{ form.supplier.label_tag }}  
+      {{ form.supplier }}
+    </div>
+
+    <div class="col-md-12">
+      {{ form.description.label_tag }}  
+      {{ form.description }}
+    </div>
+
+    <div class="col-md-4">
+      {{ form.unit_price.label_tag }}  
+      {{ form.unit_price }}
+    </div>
+
+    <div class="col-md-4">
+      {{ form.selling_price.label_tag }}  
+      {{ form.selling_price }}
+    </div>
+
+    <div class="col-md-4">
+      {{ form.stock.label_tag }}   <!-- 👈 STOCK FIELD -->
+      {{ form.stock }}
+    </div>
+
+    <div class="col-md-4">
+      {{ form.reorder_level.label_tag }}  
+      {{ form.reorder_level }}
+    </div>
+
+    <div class="col-md-4">
+      {{ form.barcode.label_tag }}  
+      {{ form.barcode }}
+    </div>
+
+    <div class="col-md-4">
+      {{ form.is_active.label_tag }}  
+      {{ form.is_active }}
+    </div>
+
+    <div class="col-12">
+      <button class="btn btn-primary">Save</button>
+    </div>
   </form>
 </div>
 
@@ -27,6 +84,7 @@
       <th>SKU</th>
       <th>Name</th>
       <th>Category</th>
+      <th>Stock</th> <!-- 👈 Shows stock in table -->
       <th>Supplier</th>
       <th>Unit Price</th>
       <th>Selling Price</th>
@@ -40,6 +98,7 @@
       <td>{{ product.sku }}</td>
       <td>{{ product.name }}</td>
       <td>{{ product.category }}</td>
+      <td>{{ product.stock }}</td> <!-- 👈 Display stock -->
       <td>{{ product.supplier }}</td>
       <td>{{ product.unit_price }}</td>
       <td>{{ product.selling_price }}</td>
@@ -48,6 +107,10 @@
         <a href="{% url 'product_detail' product.pk %}" class="btn btn-sm btn-info">Edit</a>
         <a href="{% url 'product_delete' product.pk %}" class="btn btn-sm btn-danger">Delete</a>
       </td>
+    </tr>
+  {% empty %}
+    <tr>
+      <td colspan="9" class="text-center text-muted">No products yet.</td>
     </tr>
   {% endfor %}
   </tbody>

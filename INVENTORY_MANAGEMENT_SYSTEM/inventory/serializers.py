@@ -1,35 +1,27 @@
 from rest_framework import serializers
-from .models import Category, Supplier, Customer, Store, Product
+from .models import PurchaseOrder, SalesOrder
 
-# Product category
-class CategorySerializer(serializers.ModelSerializer):
+# ------------------------
+# Purchase Serializer
+# ------------------------
+class PurchaseSerializer(serializers.ModelSerializer):
+    """
+    Serializer to convert PurchaseOrder objects
+    into JSON for API responses and validate incoming data.
+    """
     class Meta:
-        model = Category
-        fields = "__all__"
+        model = PurchaseOrder
+        fields = ["id", "product", "store", "quantity", "unit_price", "date"]
 
-# Supplier information
-class SupplierSerializer(serializers.ModelSerializer):
+
+# ------------------------
+# Sales Serializer
+# ------------------------
+class SalesSerializer(serializers.ModelSerializer):
+    """
+    Serializer to convert SalesOrder objects
+    into JSON for API responses and validate incoming data.
+    """
     class Meta:
-        model = Supplier
-        fields = "__all__"
-
-# Customer information
-class CustomerSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Customer
-        fields = "__all__"
-
-# Store/location information
-class StoreSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Store
-        fields = "__all__"
-
-# Product information with category and supplier details
-class ProductSerializer(serializers.ModelSerializer):
-    category = CategorySerializer(read_only=True)
-    supplier = SupplierSerializer(read_only=True)
-
-    class Meta:
-        model = Product
-        fields = "__all__"
+        model = SalesOrder
+        fields = ["id", "product", "store", "quantity", "unit_price", "date"]

@@ -52,11 +52,12 @@ class ProductForm(forms.ModelForm):
         model = Product
         fields = ['sku', 'name', 'category', 'supplier', 'description',
                   'unit_price', 'selling_price', 'barcode',
-                  'reorder_level', 'is_active']
+                  'reorder_level', 'is_active', 'stock']
         widgets = {
             'sku': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'SKU'}),
             'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Product Name'}),
             'category': forms.Select(attrs={'class': 'form-select'}),
+            'stock' : forms.NumberInput({'default':'0', 'placeholder': 'Enter Available stock quantity'}),
             'supplier': forms.Select(attrs={'class': 'form-select'}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Description'}),
             'unit_price': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Unit Price'}),

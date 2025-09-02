@@ -4,7 +4,4 @@ class StockConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'stock'
 
-    def ready(self):
-        # loading signals
-        import stock.signals
-
+    

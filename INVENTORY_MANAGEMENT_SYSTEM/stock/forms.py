@@ -1,24 +1,27 @@
 from django import forms
-from .models import Stock, StockTransaction
+from .models import PurchaseOrder, SalesOrder
 
-class StockForm(forms.ModelForm):
+# ------------------------
+# Purchase Form
+# ------------------------
+class PurchaseForm(forms.ModelForm):
+    """
+    Form for creating purchase orders.
+    Uses Django ModelForm to auto-generate fields from PurchaseOrder model.
+    """
     class Meta:
-        model = Stock
-        fields = ["product", "store", "quantity"]
-        widgets = {
-            "product": forms.Select(attrs={"class": "form-control"}),
-            "store": forms.Select(attrs={"class": "form-control"}),
-            "quantity": forms.NumberInput(attrs={"class": "form-control", "min": 0}),
-        }
+        model = PurchaseOrder
+        fields = ["product", "store", "quantity", "unit_price"]
 
-class StockTransactionForm(forms.ModelForm):
+
+# ------------------------
+# Sales Form
+# ------------------------
+class SalesForm(forms.ModelForm):
+    """
+    Form for creating sales orders.
+    Uses Django ModelForm to auto-generate fields from SalesOrder model.
+    """
     class Meta:
-        model = StockTransaction
-        fields = ["product", "store", "transaction_type", "quantity", "reference"]
-        widgets = {
-            "product": forms.Select(attrs={"class": "form-control"}),
-            "store": forms.Select(attrs={"class": "form-control"}),
-            "transaction_type": forms.Select(attrs={"class": "form-control"}),
-            "quantity": forms.NumberInput(attrs={"class": "form-control", "min": 0}),
-            "reference": forms.TextInput(attrs={"class": "form-control"}),
-        }
+        model = SalesOrder
+        fields = ["product", "store", "quantity", "unit_price"]

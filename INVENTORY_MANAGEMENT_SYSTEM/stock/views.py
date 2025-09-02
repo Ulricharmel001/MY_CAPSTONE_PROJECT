@@ -1,63 +1,87 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from .models import Stock, StockTransaction, Store
-from .forms import StockForm, StockTransactionForm
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .forms import PurchaseForm, SalesForm
+from .models import PurchaseOrder, SalesOrder
 
-# ---------- Stock Dashboard ----------
-def stock_dashboard(request):
-    # Get all stores with related stocks and products
-    stores = Store.objects.prefetch_related('stocks__product').all()
+# ------------------------
+# CREATE PURCHASE ORDER
+# ------------------------
+def create_purchase(request):
+    """
+    Handles purchase creation.
+    Adds purchased quantity to product stock automatically.
+    """
+    if request.method == "POST":
+        form = PurchaseForm(request.POST)
+        if form.is_valid():
+            purchase = form.save()
+            
+            # Add purchased quantity to stock
+            purchase.product.stock += purchase.quantity
+            purchase.product.save()
 
-    context = {
-        'stores': stores,
-    }
-    return render(request, 'stock/dashboard.html', context)
+            messages.success(
+                request,
+                f"Purchase order for {purchase.quantity} {purchase.product.name} added."
+            )
+            return redirect("purchase_list")
+    else:
+        form = PurchaseForm()
 
-# ---------- Stock CRUD ----------
-def add_stock(request):
-    form = StockForm(request.POST or None)
-    if form.is_valid():
-        form.save()
-        return redirect('stock_dashboard')
-    return render(request, 'stock/add_stock.html', {'form': form})
+    return render(request, "stock/create_purchase.html", {"form": form})
 
-def update_stock(request, pk):
-    stock = get_object_or_404(Stock, pk=pk)
-    form = StockForm(request.POST or None, instance=stock)
-    if form.is_valid():
-        form.save()
-        return redirect('stock_dashboard')
-    return render(request, 'stock/add_stock.html', {'form': form, 'update': True})
 
-def delete_stock(request, pk):
-    stock = get_object_or_404(Stock, pk=pk)
-    if request.method == 'POST':
-        stock.delete()
-        return redirect('stock_dashboard')
-    return render(request, 'stock/delete_confirm.html', {'object': stock})
+# ------------------------
+# CREATE SALES ORDER
+# ------------------------
+def create_sale(request):
+    """
+    Handles sales creation.
+    Deducts sold quantity from product stock.
+    Prevents sale if not enough stock.
+    """
+    if request.method == "POST":
+        form = SalesForm(request.POST)
+        if form.is_valid():
+            sale = form.save(commit=False)
 
-# ---------- StockTransaction CRUD ----------
-def transaction_list(request):
-    transactions = StockTransaction.objects.select_related('product', 'store').all()
-    return render(request, 'stock/transaction_list.html', {'transactions': transactions})
+            # Stock check
+            if sale.product.stock < sale.quantity:
+                messages.error(
+                    request,
+                    f"Not enough stock for {sale.product.name}. Available: {sale.product.stock}"
+                )
+                return redirect("sale_list")
 
-def transaction_add(request):
-    form = StockTransactionForm(request.POST or None)
-    if form.is_valid():
-        form.save()
-        return redirect('transaction_list')
-    return render(request, 'stock/transaction_add.html', {'form': form})
+            # Deduct stock and save
+            sale.product.stock -= sale.quantity
+            sale.product.save()
+            sale.save()
 
-def update_transaction(request, pk):
-    transaction = get_object_or_404(StockTransaction, pk=pk)
-    form = StockTransactionForm(request.POST or None, instance=transaction)
-    if form.is_valid():
-        form.save()
-        return redirect('transaction_list')
-    return render(request, 'stock/transaction_add.html', {'form': form, 'update': True})
+            messages.success(
+                request,
+                f"Sales order for {sale.quantity} {sale.product.name} processed."
+            )
+            return redirect("sale_list")
+    else:
+        form = SalesForm()
 
-def delete_transaction(request, pk):
-    transaction = get_object_or_404(StockTransaction, pk=pk)
-    if request.method == 'POST':
-        transaction.delete()
-        return redirect('transaction_list')
-    return render(request, 'stock/delete_confirm.html', {'object': transaction})
+    return render(request, "stock/create_sale.html", {"form": form})
+
+
+def purchase_list(request):
+    """
+    Display all purchase orders in a table.
+    """
+    purchases = PurchaseOrder.objects.all().order_by('-date')
+    return render(request, "stock/purchase_list.html", {"purchases": purchases})
+
+# ------------------------
+# LIST SALES ORDERS
+# ------------------------
+def sale_list(request):
+    """
+    Display all sales orders in a table.
+    """
+    sales = SalesOrder.objects.all().order_by('-date')
+    return render(request, "stock/sale_list.html", {"sales": sales})

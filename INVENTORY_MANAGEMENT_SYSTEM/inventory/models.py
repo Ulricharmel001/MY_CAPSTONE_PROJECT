@@ -71,14 +71,16 @@ class Customer(models.Model):
 # Product: Inventory items
 # ----------------------
 class Product(models.Model):
-    sku = models.CharField(max_length=50, unique=True)
+    sku = models.CharField(max_length=50, unique=True) # sku stand for stock keeping unit
     name = models.CharField(max_length=100)
+  
     category = models.ForeignKey(
         Category,
         on_delete=models.CASCADE,          # When Category is deleted → delete all Products
         related_name="products",
         null=True
     )
+    stock = models.PositiveIntegerField(default=0)
     supplier = models.ForeignKey(
         Supplier,
         on_delete=models.SET_NULL,         

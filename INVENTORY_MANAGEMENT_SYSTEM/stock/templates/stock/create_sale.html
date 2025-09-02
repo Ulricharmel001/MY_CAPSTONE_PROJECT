@@ -1,0 +1,13 @@
+{% extends 'stock/base.html' %}
+{% block title %}Create Sale{% endblock %}
+
+{% block content %}
+<h2>Create Sales Order</h2>
+<div class="card p-4 shadow-sm">
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button class="btn btn-success">Add Sale</button>
+  </form>
+</div>
+{% endblock %}
