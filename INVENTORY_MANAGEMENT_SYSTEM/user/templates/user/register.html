@@ -2,57 +2,35 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Register</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-<style>
-  body { background-color: #f5f7fa; font-family: 'Roboto', sans-serif; }
-  .card { border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
-  .btn-primary { background-color: #0f62fe; border: none; }
-  .btn-primary:hover { background-color: #0353e9; }
-  #password-strength { height: 8px; border-radius: 4px; margin-top: 5px; }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Register</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
-<div class="container my-5">
-  <div class="card p-5 mx-auto" style="max-width: 500px;">
-    <h3 class="mb-4 text-center">Register</h3>
-    <form method="POST" enctype="multipart/form-data">
-      {% csrf_token %}
-      {{ form.non_field_errors }}
-      {% for field in form %}
+<body class="bg-light d-flex align-items-center justify-content-center vh-100">
+
+<div class="card shadow-lg p-4 w-100" style="max-width: 480px;">
+  <h3 class="text-center mb-4">Create Account</h3>
+
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    {% for field in form %}
       <div class="mb-3">
-        {{ field.label_tag }}
+        <label class="form-label">{{ field.label }}</label>
         {{ field }}
-        <div class="text-danger">{{ field.errors }}</div>
+        {% for error in field.errors %}
+          <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
       </div>
-      {% endfor %}
-      <div id="password-strength" class="bg-danger"></div>
-      <button type="submit" class="btn btn-primary w-100 mt-3">Register</button>
-    </form>
-  </div>
+    {% endfor %}
+    <button type="submit" class="btn btn-primary w-100">Register</button>
+  </form>
+
+  <p class="text-center mt-3">
+    Already have an account? <a href="{% url 'login' %}">Login</a>
+  </p>
 </div>
 
-<script>
-const passwordInput = document.getElementById('password1');
-const strengthBar = document.getElementById('password-strength');
-
-passwordInput.addEventListener('input', function() {
-    const val = passwordInput.value;
-    let strength = 0;
-    if(val.length >= 8) strength += 1;
-    if(/[A-Z]/.test(val)) strength += 1;
-    if(/[0-9]/.test(val)) strength += 1;
-    if(/[\W]/.test(val)) strength += 1;
-
-    switch(strength){
-        case 0: strengthBar.style.width = "0%"; strengthBar.style.backgroundColor = "red"; break;
-        case 1: strengthBar.style.width = "25%"; strengthBar.style.backgroundColor = "red"; break;
-        case 2: strengthBar.style.width = "50%"; strengthBar.style.backgroundColor = "orange"; break;
-        case 3: strengthBar.style.width = "75%"; strengthBar.style.backgroundColor = "yellowgreen"; break;
-        case 4: strengthBar.style.width = "100%"; strengthBar.style.backgroundColor = "green"; break;
-    }
-});
-</script>
 </body>
 </html>

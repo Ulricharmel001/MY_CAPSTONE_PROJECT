@@ -85,3 +85,5 @@ def sale_list(request):
     """
     sales = SalesOrder.objects.all().order_by('-date')
     return render(request, "stock/sale_list.html", {"sales": sales})
+
+

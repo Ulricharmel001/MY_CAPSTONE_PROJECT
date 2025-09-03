@@ -4,9 +4,7 @@ from django.contrib import messages
 from .forms import CustomUserCreationForm, CustomAuthenticationForm
 from django.contrib.auth.decorators import login_required
 
-# ----------------------
-# Register View
-# ----------------------
+# Register
 def register_view(request):
     if request.method == "POST":
         form = CustomUserCreationForm(request.POST, request.FILES)
@@ -18,10 +16,7 @@ def register_view(request):
         form = CustomUserCreationForm()
     return render(request, "user/register.html", {"form": form})
 
-
-# ----------------------
-# Login View
-# ----------------------
+# Login
 def login_view(request):
     if request.method == "POST":
         form = CustomAuthenticationForm(request, data=request.POST)
@@ -29,25 +24,18 @@ def login_view(request):
             user = form.get_user()
             login(request, user)
             messages.success(request, f"Welcome back, {user.first_name}!")
-            return redirect("profile")  # redirect to profile/dashboard
+            return redirect("profile")
     else:
         form = CustomAuthenticationForm()
     return render(request, "user/login.html", {"form": form})
 
-
-# ----------------------
-# Logout View
-# ----------------------
+# Logout
 def logout_view(request):
     logout(request)
     messages.info(request, "You have been logged out.")
     return redirect("login")
 
-
-# ----------------------
-# Profile View (requires login)
-# ----------------------
-
+# Profile
 @login_required
 def profile_view(request):
     return render(request, "user/profile.html")

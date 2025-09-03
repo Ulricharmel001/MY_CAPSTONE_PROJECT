@@ -54,12 +54,14 @@ INSTALLED_APPS = [
 
     # My apps
     'inventory',
-    'user',
+   'user.apps.UserConfig',
     'stock',
     'report',
 
 
 ]
+
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -142,3 +144,16 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+LOGIN_URL = "login"            # If not logged in, redirect here
+LOGIN_REDIRECT_URL = "profile" # Default after successful login
+LOGOUT_REDIRECT_URL = "login"  # After logout
+
+
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+#help in password reset 
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"

@@ -1,32 +1,35 @@
 from django.contrib import admin
-
-# Register your models here.
-from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from .models import CustomUser, Profile
+from django.utils.translation import gettext_lazy as _
 
-# Register your custom user model
 @admin.register(CustomUser)
 class CustomUserAdmin(UserAdmin):
-    # Customize what fields appear in admin
-    model = CustomUser
-    list_display = ('username', 'email', 'is_staff', 'is_active')
-    list_filter = ('is_staff', 'is_active')
+    # Display these fields in the list view
+    list_display = ("email", "first_name", "last_name", "is_staff", "is_active")
+    list_filter = ("is_staff", "is_superuser", "is_active", "groups")
+
+    # Use email as the field for login
     fieldsets = (
-        (None, {'fields': ('username', 'email', 'password')}),
-        ('Permissions', {'fields': ('is_staff', 'is_active', 'groups', 'user_permissions')}),
-        ('Important dates', {'fields': ('last_login', 'date_joined')}),
+        (None, {"fields": ("email", "password")}),
+        (_("Personal info"), {"fields": ("first_name", "last_name", "date_of_birth", "profile_photo")}),
+        (_("Permissions"), {"fields": ("is_active", "is_staff", "is_superuser", "groups", "user_permissions")}),
+        (_("Important dates"), {"fields": ("last_login", "date_joined")}),
     )
+
+    # Fields for the create user form in admin
     add_fieldsets = (
         (None, {
-            'classes': ('wide',),
-            'fields': ('username', 'email', 'password1', 'password2', 'is_staff', 'is_active')}
-        ),
+            "classes": ("wide",),
+            "fields": ("email", "first_name", "last_name", "password1", "password2", "is_active", "is_staff", "is_superuser"),
+        }),
     )
-    search_fields = ('email', 'username')
-    ordering = ('email',)
 
-# Register the Profile model
+    search_fields = ("email", "first_name", "last_name")
+    ordering = ("email",)
+    filter_horizontal = ("groups", "user_permissions")
+    
+
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
-    list_display = ('user', 'full_name', 'created_at')  
+    list_display = ("user", "created_at")
