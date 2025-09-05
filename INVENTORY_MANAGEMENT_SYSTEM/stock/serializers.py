@@ -1,21 +1,34 @@
 from rest_framework import serializers
-from .models import Stock, StockTransaction
-from inventory.serializers import ProductSerializer, StoreSerializer
+from .models import PurchaseOrder, SalesOrder
 
-# Quantity per product per store
-class StockSerializer(serializers.ModelSerializer):
-    product = ProductSerializer(read_only=True)
-    store = StoreSerializer(read_only=True)
-
+class PurchaseOrderSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Stock
-        fields = "__all__"
+        model = PurchaseOrder
+        fields = ['id', 'product', 'store', 'quantity', 'unit_price', 'date']
+        read_only_fields = ['date']
 
-# Stock movements (in/out)
-class StockTransactionSerializer(serializers.ModelSerializer):
-    product = ProductSerializer(read_only=True)
-    store = StoreSerializer(read_only=True)
+    def validate_quantity(self, value):
+        if value <= 0:
+            raise serializers.ValidationError("Quantity must be positive")
+        return value
 
+    def validate_unit_price(self, value):
+        if value <= 0:
+            raise serializers.ValidationError("Unit price must be positive")
+        return value
+
+class SalesOrderSerializer(serializers.ModelSerializer):
     class Meta:
-        model = StockTransaction
-        fields = "__all__"
+        model = SalesOrder
+        fields = ['id', 'product', 'store', 'quantity', 'unit_price', 'date']
+        read_only_fields = ['date']
+
+    def validate_quantity(self, value):
+        if value <= 0:
+            raise serializers.ValidationError("Quantity must be positive")
+        return value
+
+    def validate_unit_price(self, value):
+        if value <= 0:
+            raise serializers.ValidationError("Unit price must be positive")
+        return value

@@ -35,7 +35,9 @@ def logout_view(request):
     messages.info(request, "You have been logged out.")
     return redirect("login")
 
-# Profile
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+
 @login_required
 def profile_view(request):
-    return render(request, "user/profile.html")
+    return render(request, "user/profile.html", {"user": request.user})

@@ -49,9 +49,9 @@ class Supplier(models.Model):
         return self.name
 
 
-# ----------------------
-# Customer: End-user or client
-# ----------------------
+
+#record info of customers
+
 class Customer(models.Model):
     name = models.CharField(max_length=100)
     email = models.EmailField(blank=True, null=True, unique=True)
@@ -89,7 +89,7 @@ class Product(models.Model):
     )
     description = models.TextField(blank=True, null=True)
     unit_price = models.DecimalField(max_digits=10, decimal_places=2)
-    selling_price = models.DecimalField(max_digits=10, decimal_places=2)
+    selling_price = models.FloatField()
     barcode = models.CharField(max_length=100, blank=True, null=True)
     reorder_level = models.IntegerField(default=10)
     is_active = models.BooleanField(default=True)

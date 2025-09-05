@@ -1,0 +1,44 @@
+{% extends "inventory/base.html" %}
+{% block title %}Customers{% endblock %}
+{% block page_title %}Customers{% endblock %}
+
+{% block content %}
+<div class="card mb-4 p-4">
+  <h5>Add New Customer</h5>
+  <form method="POST" class="row g-3">
+    {% csrf_token %}
+    <div class="col-md-6">{{ form.name.label_tag }} {{ form.name }}</div>
+    <div class="col-md-6">{{ form.email.label_tag }} {{ form.email }}</div>
+    <div class="col-md-6">{{ form.phone.label_tag }} {{ form.phone }}</div>
+    <div class="col-12">{{ form.address.label_tag }} {{ form.address }}</div>
+    <div class="col-12 mt-3">
+      <button type="submit" class="btn btn-primary">Add Customer</button>
+    </div>
+  </form>
+</div>
+
+<div class="card p-4">
+  <h5>All Customers</h5>
+  <table class="table table-hover">
+    <thead>
+      <tr><th>ID</th><th>Name</th><th>Email</th><th>Phone</th><th>Actions</th></tr>
+    </thead>
+    <tbody>
+      {% for customer in customers %}
+      <tr>
+        <td>{{ customer.id }}</td>
+        <td>{{ customer.name }}</td>
+        <td>{{ customer.email }}</td>
+        <td>{{ customer.phone }}</td>
+        <td>
+          <a href="{% url 'customer-detail' customer.id %}" class="btn btn-sm btn-primary">Edit</a>
+          <a href="{% url 'customer-delete' customer.id %}" class="btn btn-sm btn-danger">Delete</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="5" class="text-center text-muted">No customers available</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

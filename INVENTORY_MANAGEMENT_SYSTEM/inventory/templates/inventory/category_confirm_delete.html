@@ -1,6 +1,20 @@
-<h3>Are you sure you want to delete category: {{ category.name }}?</h3>
-<form method="POST">
-    {% csrf_token %}
-    <button type="submit" class="btn btn-danger">Yes, Delete</button>
-    <a href="{% url 'category_list' %}" class="btn btn-secondary">Cancel</a>
-</form>
+{% extends 'inventory/base.html' %}
+
+{% block title %}Delete Category - Inventory{% endblock %}
+{% block page_title %}Delete Category{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+  <div class="card p-4 text-center">
+    <h3 class="text-danger">⚠ Are you sure you want to delete category: <strong>{{ category.name }}</strong>?</h3>
+
+    <form method="POST" class="mt-4">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-danger">Yes, Delete</button>
+      <a href="{% url 'category_list' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+  </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends "inventory/base.html" %}
+{% block title %}Edit Supplier{% endblock %}
+{% block page_title %}Edit Supplier{% endblock %}
+
+{% block content %}
+<div class="card p-4">
+  <h5>Edit Supplier</h5>
+  <form method="POST" class="row g-3">
+    {% csrf_token %}
+    <div class="col-md-6">{{ form.name.label_tag }} {{ form.name }}</div>
+    <div class="col-md-6">{{ form.email.label_tag }} {{ form.email }}</div>
+    <div class="col-md-6">{{ form.phone.label_tag }} {{ form.phone }}</div>
+    <div class="col-12">{{ form.address.label_tag }} {{ form.address }}</div>
+    <div class="col-12 mt-3">
+      <button type="submit" class="btn btn-primary">Update Supplier</button>
+      <a href="{% url 'supplier-list' %}" class="btn btn-secondary">Back to List</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

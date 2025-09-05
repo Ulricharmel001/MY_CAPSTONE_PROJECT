@@ -1,11 +1,13 @@
 # inventory/forms.py
 from django import forms
-from .models import Store, Category, Product, Supplier
+from .models import Store, Category, Product, Supplier, Customer, Supplier
+
 
 # ----------------------
-# Store Form
+# Django Form for Store
 # ----------------------
 class StoreForm(forms.ModelForm):
+    """Form to create or edit a Store"""
     class Meta:
         model = Store
         fields = ['name', 'location']
@@ -16,32 +18,20 @@ class StoreForm(forms.ModelForm):
 
 
 # ----------------------
-# Category Form
+# Django Form for Category
 # ----------------------
 class CategoryForm(forms.ModelForm):
+    """Form to create or edit a Category"""
     class Meta:
         model = Category
-        fields = ['name', 'description', 'store']
+        fields = ['name', 'store']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Category Name'}),
-            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Description'}),
             'store': forms.Select(attrs={'class': 'form-select'}),
         }
 
 
-# ----------------------
-# Supplier Form
-# ----------------------
-class SupplierForm(forms.ModelForm):
-    class Meta:
-        model = Supplier
-        fields = ['name', 'email', 'phone', 'address']
-        widgets = {
-            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Supplier Name'}),
-            'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email'}),
-            'phone': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Phone'}),
-            'address': forms.Textarea(attrs={'class': 'form-control', 'rows': 2, 'placeholder': 'Address'}),
-        }
+
 
 
 # ----------------------
@@ -65,4 +55,34 @@ class ProductForm(forms.ModelForm):
             'barcode': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Barcode'}),
             'reorder_level': forms.NumberInput(attrs={'class': 'form-control'}),
             'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
+
+
+
+# ----------------------
+# Customer Form
+# ----------------------
+class CustomerForm(forms.ModelForm):
+    class Meta:
+        model = Customer
+        fields = ['name', 'email', 'phone', 'address']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Customer Name'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email'}),
+            'phone': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Phone'}),
+            'address': forms.Textarea(attrs={'class': 'form-control', 'rows': 2, 'placeholder': 'Address'}),
+        }
+
+# ----------------------
+# Supplier Form
+# ----------------------
+class SupplierForm(forms.ModelForm):
+    class Meta:
+        model = Supplier
+        fields = ['name', 'email', 'phone', 'address']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Supplier Name'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email'}),
+            'phone': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Phone'}),
+            'address': forms.Textarea(attrs={'class': 'form-control', 'rows': 2, 'placeholder': 'Address'}),
         }
