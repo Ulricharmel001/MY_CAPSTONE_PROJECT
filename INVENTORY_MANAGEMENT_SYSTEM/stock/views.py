@@ -4,16 +4,14 @@ from django.db import transaction
 from .forms import PurchaseOrderForm, SalesOrderForm
 from .models import PurchaseOrder, SalesOrder
 
-# ------------------------
-# PURCHASE LIST
-# ------------------------
+# PURCHASE LIST : list all purchase items 
 def purchase_list(request):
     purchases = PurchaseOrder.objects.all().order_by('-date')
     return render(request, "stock/purchase_list.html", {"purchases": purchases})
 
-# ------------------------
-# CREATE PURCHASE
-# ------------------------
+# CREATE PURCHASE: This provide a form to create  purchase
+""" and also made a calcultion of adding purchase value to stock of product in product model , show 
+quantity and name odf product  bought """
 def create_purchase(request):
     if request.method == "POST":
         form = PurchaseOrderForm(request.POST)
@@ -30,16 +28,14 @@ def create_purchase(request):
         form = PurchaseOrderForm()
     return render(request, "stock/create_purchase.html", {"form": form})
 
-# ------------------------
-# SALES LIST
-# ------------------------
+# SALES LIST, list all sales items
 def sale_list(request):
     sales = SalesOrder.objects.all().order_by('-date')
     return render(request, "stock/sale_list.html", {"sales": sales})
 
-# ------------------------
-# CREATE SALE
-# ------------------------
+# CREATE SALE: this would make it possible to create sale transactions 
+# it also check if sales quantity is positive and if its not, it would display 
+# not enough message, and show available amount for user to know what amount sell
 def create_sale(request):
     if request.method == "POST":
         form = SalesOrderForm(request.POST)

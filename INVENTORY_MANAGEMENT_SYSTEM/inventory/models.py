@@ -16,6 +16,7 @@ class Store(models.Model):
 # ----------------------
 class Category(models.Model):
     name = models.CharField(max_length=100)
+    # product = models.ForeignKey(Product,)
     description = models.TextField(blank=True, null=True)
     store = models.ForeignKey(
         Store,
