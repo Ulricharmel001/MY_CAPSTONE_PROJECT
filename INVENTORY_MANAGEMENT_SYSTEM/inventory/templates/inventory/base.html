@@ -31,7 +31,7 @@
   <!-- Sidebar -->
   <div class="sidebar p-3">
     <h3 class="text-center mb-4">IMS Dashboard</h3>
-    <a href="{% url 'dashboard' %}">Dashboard</a>
+    {% comment %} <a href="{% url '' %}">Dashboard</a> {% endcomment %}
     <a href="{% url 'store-list' %}">Stores</a>
     <a href="{% url 'category_list' %}">Categories</a>
     <a href="{% url 'product_list' %}">Products</a>

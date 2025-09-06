@@ -1,0 +1,133 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}Welcome{% endblock %}
+{% block page_title %}Welcome to IMS{% endblock %}
+
+{% block content %}
+<style>
+    .welcome-hero {
+        background: linear-gradient(135deg, #6dd5ed, #2193b0);
+        color: white;
+        padding: 80px 0;
+        border-radius: 10px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        animation: fadeIn 1s ease-out;
+    }
+    .welcome-hero h1 {
+        font-size: 3.5rem;
+        font-weight: 700;
+        margin-bottom: 20px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+    .welcome-hero p {
+        font-size: 1.25rem;
+        line-height: 1.8;
+        max-width: 800px;
+        margin: 0 auto 40px auto;
+    }
+    .feature-card {
+        background-color: #ffffff;
+        border-radius: 10px;
+        padding: 30px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        height: 100%; /* Ensure cards are same height */
+    }
+    .feature-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 25px rgba(0, 0, 0, 0.15);
+    }
+    .feature-card .icon {
+        font-size: 3rem;
+        margin-bottom: 20px;
+        color: #2193b0;
+    }
+    .feature-card h5 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 15px;
+    }
+    .action-buttons .btn {
+        padding: 12px 30px;
+        font-size: 1.1rem;
+        border-radius: 50px;
+        transition: all 0.3s ease;
+    }
+    .action-buttons .btn-primary {
+        background-color: #2193b0;
+        border-color: #2193b0;
+        box-shadow: 0 4px 10px rgba(33, 147, 176, 0.4);
+    }
+    .action-buttons .btn-primary:hover {
+        background-color: #1a7b93;
+        border-color: #1a7b93;
+        transform: translateY(-2px);
+    }
+    .action-buttons .btn-outline-primary {
+        color: #2193b0;
+        border-color: #2193b0;
+    }
+    .action-buttons .btn-outline-primary:hover {
+        background-color: #2193b0;
+        color: white;
+        transform: translateY(-2px);
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="welcome-hero text-center mb-5">
+        <h1>Welcome to Your Smart Inventory Management System (IMS)</h1>
+        <p>
+            Revolutionize the way you manage your stock. IMS is your comprehensive partner for effortless inventory tracking, sales and purchase optimization, and proactive reorder management.
+        </p>
+        <div class="action-buttons">
+            <a href="{% url 'login' %}" class="btn btn-primary btn-lg me-3">Login to Your Account</a>
+            <a href="{% url 'register' %}" class="btn btn-outline-primary btn-lg">Create a Free Account</a>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-5">
+        <div class="col-md-6 col-lg-3">
+            <div class="feature-card text-center">
+                <i class="fas fa-cubes icon"></i>
+                <h5>Real-time Stock Tracking</h5>
+                <p class="text-muted">Monitor inventory levels instantly across all your stores. Never lose track of your valuable assets.</p>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+            <div class="feature-card text-center">
+                <i class="fas fa-chart-line icon"></i>
+                <h5>Sales & Purchase Insights</h5>
+                <p class="text-muted">Gain deep insights into your transaction history and identify trends to optimize your business strategy.</p>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+            <div class="feature-card text-center">
+                <i class="fas fa-bell icon"></i>
+                <h5>Automated Reorder Alerts</h5>
+                <p class="text-muted">Set intelligent reorder points and receive timely notifications to prevent stockouts and maximize sales.</p>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+            <div class="feature-card text-center">
+                <i class="fas fa-tachometer-alt icon"></i>
+                <h5>Intuitive Dashboard</h5>
+                <p class="text-muted">Access a clear, concise overview of your entire inventory and business performance at a glance.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="card p-4 text-center mt-5" style="background-color: #f8f9fa; border: none;">
+        <h3 class="mb-4">Ready to Transform Your Inventory Management?</h3>
+        <p class="lead">Join countless businesses already benefiting from streamlined operations and enhanced efficiency with IMS.</p>
+        <div class="mt-4">
+            <a href="{% url 'register' %}" class="btn btn-success btn-lg me-3">Get Started Today!</a>
+            <a href="{% url 'login' %}" class="btn btn-outline-secondary btn-lg">Existing User? Login</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

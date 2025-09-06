@@ -11,6 +11,7 @@ class PurchaseOrderForm(forms.ModelForm):
             'store': forms.Select(attrs={'class': 'form-control'}),
             'quantity': forms.NumberInput(attrs={'class': 'form-control', 'min': 1}),
             'unit_price': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
+            
         }
 
     def clean_quantity(self):
