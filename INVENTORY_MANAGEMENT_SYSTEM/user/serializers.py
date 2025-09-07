@@ -82,7 +82,6 @@ class LoginSerializer(serializers.Serializer):
 
 """
 ProfileSerializer
------------------
 Handles retrieving and updating profile information.
 Keeps the profile data (bio, created_at) separate from the core User model.
 """
