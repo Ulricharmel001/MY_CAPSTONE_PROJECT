@@ -1,243 +1,150 @@
-from django.shortcuts import render, get_object_or_404, redirect
-from django import forms
-from .models import Store, Category, Supplier, Customer, Product
-from .forms import CustomerForm, SupplierForm, StoreForm,CategoryForm, ProductForm
-from django.db.models import Count
+from django.shortcuts import redirect
+from django.urls import reverse_lazy
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import ListView, UpdateView, DeleteView
+from .models import Store, Category, Product, Customer, Supplier
+from .forms import StoreForm, CategoryForm, ProductForm, CustomerForm, SupplierForm
 
 # ----------------------
-# List all stores and add a new store here
+# Reusable List + Create Mixin
 # ----------------------
-def store_list(request):
+class ListCreateMixin(LoginRequiredMixin, ListView):
     """
-    Handles displaying all stores and adding a new store via form.
-    GET: Render template with all stores and empty form.
-    POST: Process form submission to create a new store.
+    Handles displaying a list of objects and creating a new object via POST.
     """
-    if request.method == 'POST':
-        form = StoreForm(request.POST)
-        if form.is_valid():
-            form.save()  # Save new store
-            return redirect('store-list')  # Redirect to refresh page
-    else:
-        form = StoreForm()  # Empty form for GET request
+    form_class = None  # Must be defined in subclass
+    success_url = None
 
-    stores = Store.objects.all()  # Fetch all stores
-    return render(request, 'inventory/store_list.html', {'stores': stores, 'form': form})
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Add form to context
+        if 'form' not in context:
+            context['form'] = self.form_class()
+        return context
 
-# ----------------------
-# View, edit, or delete a single store
-# ----------------------
-def store_detail(request, pk):
-    """
-    Handles displaying and updating a single store.
-    GET: Show store details with pre-filled form.
-    POST: Update store using form submission.
-    """
-    store = get_object_or_404(Store, pk=pk)
-
-    if request.method == 'POST':
-        form = StoreForm(request.POST, instance=store)
-        if form.is_valid():
-            form.save()  # Update store
-            return redirect('store-list')
-    else:
-        form = StoreForm(instance=store)  # Pre-filled form
-
-    return render(request, 'inventory/store_detail.html', {'store': store, 'form': form})
-
-
-# ----------------------
-# List all categories and add a new category
-# ----------------------
-def category_list(request):
-    """
-    GET: Render template showing all categories and a form to add a new category.
-    POST: Process form to create a new category.
-    """
-    if request.method == 'POST':
-        form = CategoryForm(request.POST)
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('category_list')
-    else:
-        form = CategoryForm()
-
-    categories = Category.objects.all()
-    return render(request, 'inventory/category_list.html', {'categories': categories, 'form': form})
-
-# ----------------------
-# View, edit, or delete a single category
-# ----------------------
-def category_detail(request, pk):
-    """
-    GET: Render template showing a single category with pre-filled form.
-    POST: Update category with submitted form data.
-    """
-    category = get_object_or_404(Category, pk=pk)
-
-    if request.method == 'POST':
-        form = CategoryForm(request.POST, instance=category)
-        if form.is_valid():
-            form.save()
-            return redirect('category_list')
-    else:
-        form = CategoryForm(instance=category)
-
-    return render(request, 'inventory/category_detail.html', {'category': category, 'form': form})
-
-
-
-
-# Delete a category
-
-def category_delete(request, pk):
-    """Delete a category and redirect to category list"""
-    category = get_object_or_404(Category, pk=pk)
-    if request.method == 'POST':
-        category.delete()
-        return redirect('category_list')
-    return render(request, 'inventory/category_confirm_delete.html', {'category': category})  
-
-# Delete a store
-
-def store_delete(request, pk):
-    """Delete a store and redirect to store list"""
-    store = get_object_or_404(Store, pk=pk)
-    if request.method == 'POST':
-        store.delete()
-        return redirect('store-list')
-    return render(request, 'inventory/store_confirm_delete.html', {'store': store})
-
-
-
+            return redirect(self.success_url)
+        # Re-render the list with form errors
+        self.object_list = self.get_queryset()
+        context = self.get_context_data(form=form)
+        return self.render_to_response(context)
 
 
 # ----------------------
-# List all products + add new
+# Store Views
 # ----------------------
-def product_list(request):
-    if request.method == "POST":
-        form = ProductForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect("product_list")
-    else:
-        form = ProductForm()
-    products = Product.objects.select_related("category", "supplier").all()
-    return render(request, "inventory/product_list.html", {"products": products, "form": form})
-
-# ----------------------
-# Update a product
-# ----------------------
-def product_detail(request, pk):
-    product = get_object_or_404(Product, pk=pk)
-    if request.method == "POST":
-        form = ProductForm(request.POST, instance=product)
-        if form.is_valid():
-            form.save()
-            return redirect("product_list")
-    else:
-        form = ProductForm(instance=product)
-    return render(request, "inventory/product_detail.html", {"product": product, "form": form})
+class StoreListView(ListCreateMixin):
+    model = Store
+    form_class = StoreForm
+    template_name = 'inventory/store_list.html'
+    context_object_name = 'stores'
+    success_url = reverse_lazy('store-list')
 
 
+class StoreDetailView(LoginRequiredMixin, UpdateView):
+    model = Store
+    form_class = StoreForm
+    template_name = 'inventory/store_detail.html'
+    success_url = reverse_lazy('store-list')
 
 
+class StoreDeleteView(LoginRequiredMixin, DeleteView):
+    model = Store
+    template_name = 'inventory/store_confirm_delete.html'
+    success_url = reverse_lazy('store-list')
+
+# Category Views
+class CategoryListView(ListCreateMixin):
+    model = Category
+    form_class = CategoryForm
+    template_name = 'inventory/category_list.html'
+    context_object_name = 'categories'
+    success_url = reverse_lazy('category-list')
 
 
+class CategoryDetailView(LoginRequiredMixin, UpdateView):
+    model = Category
+    form_class = CategoryForm
+    template_name = 'inventory/category_detail.html'
+    success_url = reverse_lazy('category-list')
 
-# ----------------------
-# Delete a product
-# ----------------------
-def product_delete(request, pk):
-    product = get_object_or_404(Product, pk=pk)
-    if request.method == "POST":
-        product.delete()
-        return redirect("product_list")
-    return render(request, "inventory/product_confirm_delete.html", {"product": product})
 
-# ----------------------
-# Customer CRUD list all customers of a store 
-# ----------------------
-def customer_list(request):
-    if request.method == 'POST':
-        form = CustomerForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('customer-list')
-    else:
-        form = CustomerForm()
-    customers = Customer.objects.all()
-    return render(request, 'inventory/customer_list.html', {'customers': customers, 'form': form})
-
-def customer_detail(request, pk):
-    customer = get_object_or_404(Customer, pk=pk)
-    if request.method == 'POST':
-        form = CustomerForm(request.POST, instance=customer)
-        if form.is_valid():
-            form.save()
-            return redirect('customer-list')
-    else:
-        form = CustomerForm(instance=customer)
-    return render(request, 'inventory/customer_detail.html', {'customer': customer, 'form': form})
-
-def customer_delete(request, pk):
-    customer = get_object_or_404(Customer, pk=pk)
-    if request.method == 'POST':
-        customer.delete()
-        return redirect('customer-list')
-    return render(request, 'inventory/customer_confirm_delete.html', {'customer': customer})
+class CategoryDeleteView(LoginRequiredMixin, DeleteView):
+    model = Category
+    template_name = 'inventory/category_confirm_delete.html'
+    success_url = reverse_lazy('category-list')
 
 
 # ----------------------
-# Supplier CRUD List all supplier of store here
+# Product Views
 # ----------------------
-def supplier_list(request):
-    if request.method == 'POST':
-        form = SupplierForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('supplier-list')
-    else:
-        form = SupplierForm()
-    suppliers = Supplier.objects.all()
-    return render(request, 'inventory/supplier_list.html', {'suppliers': suppliers, 'form': form})
-
-def supplier_detail(request, pk):
-    supplier = get_object_or_404(Supplier, pk=pk)
-    if request.method == 'POST':
-        form = SupplierForm(request.POST, instance=supplier)
-        if form.is_valid():
-            form.save()
-            return redirect('supplier-list')
-    else:
-        form = SupplierForm(instance=supplier)
-    return render(request, 'inventory/supplier_detail.html', {'supplier': supplier, 'form': form})
-
-def supplier_delete(request, pk):
-    supplier = get_object_or_404(Supplier, pk=pk)
-    if request.method == 'POST':
-        supplier.delete()
-        return redirect('supplier-list')
-    return render(request, 'inventory/supplier_confirm_delete.html', {'supplier': supplier})
+class ProductListView(ListCreateMixin):
+    model = Product
+    form_class = ProductForm
+    template_name = 'inventory/product_list.html'
+    context_object_name = 'products'
+    success_url = reverse_lazy('product-list')
 
 
-def product_detail(request, pk):
-    product = get_object_or_404(Product, pk=pk)
-    if request.method == "POST":
-        form = ProductForm(request.POST, instance=product)
-        if form.is_valid():
-            form.save()
-            return redirect("product_list")
-    else:
-        form = ProductForm(instance=product)
-    return render(request, "inventory/product_detail.html", {"product": product, "form": form})
+class ProductDetailView(LoginRequiredMixin, UpdateView):
+    model = Product
+    form_class = ProductForm
+    template_name = "inventory/product_detail.html"
+    success_url = reverse_lazy("product-list")
 
 
+class ProductDeleteView(LoginRequiredMixin, DeleteView):
+    model = Product
+    template_name = "inventory/product_confirm_delete.html"
+    success_url = reverse_lazy("product-list")
 
 
+# ----------------------
+# Customer Views
+# ----------------------
+class CustomerListView(ListCreateMixin):
+    model = Customer
+    form_class = CustomerForm
+    template_name = 'inventory/customer_list.html'
+    context_object_name = 'customers'
+    success_url = reverse_lazy('customer-list')
 
 
+class CustomerDetailView(LoginRequiredMixin, UpdateView):
+    model = Customer
+    form_class = CustomerForm
+    template_name = 'inventory/customer_detail.html'
+    success_url = reverse_lazy('customer-list')
 
 
+class CustomerDeleteView(LoginRequiredMixin, DeleteView):
+    model = Customer
+    template_name = 'inventory/customer_confirm_delete.html'
+    success_url = reverse_lazy('customer-list')
 
+
+# ----------------------
+# Supplier Views
+# ----------------------
+class SupplierListView(ListCreateMixin):
+    model = Supplier
+    form_class = SupplierForm
+    template_name = 'inventory/supplier_list.html'
+    context_object_name = 'suppliers'
+    success_url = reverse_lazy('supplier-list')
+
+
+class SupplierDetailView(LoginRequiredMixin, UpdateView):
+    model = Supplier
+    form_class = SupplierForm
+    template_name = 'inventory/supplier_detail.html'
+    success_url = reverse_lazy('supplier-list')
+
+
+class SupplierDeleteView(LoginRequiredMixin, DeleteView):
+    model = Supplier
+    template_name = 'inventory/supplier_confirm_delete.html'
+    success_url = reverse_lazy('supplier-list')

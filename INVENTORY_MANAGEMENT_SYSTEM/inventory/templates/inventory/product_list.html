@@ -41,8 +41,8 @@
       <td>{{ product.is_active }}</td>
       <td>
         <!-- Correct Edit and Delete URLs -->
-        <a href="{% url 'product_detail' product.pk %}" class="btn btn-sm btn-info">Edit</a>
-        <a href="{% url 'product_delete' product.pk %}" class="btn btn-sm btn-danger">Delete</a>
+        <a href="{% url 'product-detail' product.pk %}" class="btn btn-sm btn-info">Edit</a>
+        <a href="{% url 'product-delete' product.pk %}" class="btn btn-sm btn-danger">Delete</a>
       </td>
     </tr>
   {% empty %}

@@ -10,6 +10,11 @@
   {% csrf_token %}
   {{ form.as_p }}
   <button type="submit" class="btn btn-success">Update</button>
-  <a href="{% url 'product_list' %}" class="btn btn-secondary">Back</a>
+  <a href="{% url 'product-list' %}" class="btn btn-secondary">Back</a>
 </form>
 {% endblock %}
+
+
+
+
+

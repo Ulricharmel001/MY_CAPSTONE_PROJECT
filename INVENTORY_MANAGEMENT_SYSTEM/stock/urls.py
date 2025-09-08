@@ -1,9 +1,15 @@
 from django.urls import path
-from . import views
+from .views import (
+    PurchaseOrderListView, PurchaseOrderCreateView,
+    SalesOrderListView, SalesOrderCreateView
+)
 
 urlpatterns = [
-    path('purchases/', views.purchase_list, name='purchase_list'),# list of purchases
-    path('sales/', views.sale_list, name='sale_list'),#list of sales transactions
-    path('purchases/create/', views.create_purchase, name='create_purchase'),#purchase creation form
-    path('sales/create/', views.create_sale, name='create_sale'), #sales  creation form
+    # Purchases
+    path('purchases/', PurchaseOrderListView.as_view(), name='purchase_list'),
+    path('purchases/create/', PurchaseOrderCreateView.as_view(), name='create_purchase'),
+
+    # Sales
+    path('sales/', SalesOrderListView.as_view(), name='sale_list'),
+    path('sales/create/', SalesOrderCreateView.as_view(), name='create_sale'),
 ]
