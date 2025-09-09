@@ -4,6 +4,7 @@ from django.shortcuts import render, redirect
 from django.db.models import Sum, F, ExpressionWrapper, DecimalField
 from inventory.models import Store, Category, Product, Customer
 from stock.models import PurchaseOrder, SalesOrder
+from django.contrib.auth.decorators import login_required
 
 
 def welcome_view(request):
@@ -11,24 +12,27 @@ def welcome_view(request):
     if request.user.is_authenticated:
         return redirect('dashboard_view')
     return render(request, 'dashboard/welcome.html')
-
+@login_required
 def dashboard_view(request):
-    """Main dashboard with metrics"""
-    store_count = Store.objects.count()
-    category_count = Category.objects.count()
-    product_count = Product.objects.count()
-    customer_count = Customer.objects.count()
-    purchase_count = PurchaseOrder.objects.count()
-    sales_count = SalesOrder.objects.count()
+    """Main dashboard with metrics for current user only"""
+    store_count = Store.objects.filter(user=request.user).count()
+    category_count = Category.objects.filter(user=request.user).count()
+    product_count = Product.objects.filter(user=request.user).count()
+    customer_count = Customer.objects.filter(user=request.user).count()
+    purchase_qs = PurchaseOrder.objects.filter(user=request.user)
+    sales_qs = SalesOrder.objects.filter(user=request.user)
 
-    total_purchased = PurchaseOrder.objects.aggregate(total=Sum('quantity'))['total'] or 0
-    total_sold = SalesOrder.objects.aggregate(total=Sum('quantity'))['total'] or 0
+    purchase_count = purchase_qs.count()
+    sales_count = sales_qs.count()
 
-    total_purchase_value = PurchaseOrder.objects.aggregate(
+    total_purchased = purchase_qs.aggregate(total=Sum('quantity'))['total'] or 0
+    total_sold = sales_qs.aggregate(total=Sum('quantity'))['total'] or 0
+
+    total_purchase_value = purchase_qs.aggregate(
         total=Sum(ExpressionWrapper(F('quantity') * F('unit_price'), output_field=DecimalField()))
     )['total'] or 0
 
-    total_sales_value = SalesOrder.objects.aggregate(
+    total_sales_value = sales_qs.aggregate(
         total=Sum(ExpressionWrapper(F('quantity') * F('unit_price'), output_field=DecimalField()))
     )['total'] or 0
 
@@ -45,3 +49,4 @@ def dashboard_view(request):
         'total_sales_value': total_sales_value,
     }
     return render(request, 'dashboard/main.html', context)
+

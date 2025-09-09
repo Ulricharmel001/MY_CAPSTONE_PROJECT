@@ -7,12 +7,12 @@
 <div class="container-fluid">
 
   <div class="card p-4 text-center">
-    <h3 class="text-danger">⚠ Are you sure you want to delete category: <strong>{{ category.name }}</strong>?</h3>
+    <h3 class="text-danger">Are you sure you want to delete category: <strong>{{ category.name }}</strong>?</h3>
 
     <form method="POST" class="mt-4">
       {% csrf_token %}
       <button type="submit" class="btn btn-danger">Yes, Delete</button>
-      <a href="{% url 'category_list' %}" class="btn btn-secondary">Cancel</a>
+      <a href="{% url 'category-list' %}" class="btn btn-secondary">Cancel</a>
     </form>
   </div>
 

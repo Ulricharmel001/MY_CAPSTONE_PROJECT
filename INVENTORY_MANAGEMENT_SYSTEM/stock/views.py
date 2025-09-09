@@ -13,6 +13,10 @@ class PurchaseOrderListView(LoginRequiredMixin, ListView):
     context_object_name = 'purchases'
     ordering = ['-date']  # latest first
 
+    def get_queryset(self):
+        return PurchaseOrder.objects.filter(user=self.request.user)
+
+
 # ----------------------
 # Create a new purchase
 # ----------------------
@@ -21,6 +25,11 @@ class PurchaseOrderCreateView(LoginRequiredMixin, CreateView):
     form_class = PurchaseOrderForm
     template_name = 'stock/purchase_form.html'
     success_url = reverse_lazy('purchase_list')
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
+
 
 # ----------------------
 # List all sales
@@ -31,6 +40,10 @@ class SalesOrderListView(LoginRequiredMixin, ListView):
     context_object_name = 'sales'
     ordering = ['-date']  # latest first
 
+    def get_queryset(self):
+        return SalesOrder.objects.filter(user=self.request.user)
+
+
 # ----------------------
 # Create a new sale
 # ----------------------
@@ -39,3 +52,7 @@ class SalesOrderCreateView(LoginRequiredMixin, CreateView):
     form_class = SalesOrderForm
     template_name = 'stock/sale_form.html'
     success_url = reverse_lazy('sale_list')
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)

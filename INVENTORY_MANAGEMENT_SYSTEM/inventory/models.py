@@ -1,9 +1,13 @@
 from django.db import models
+from django.conf import settings
 
 # ----------------------
 # Store: Multi-location support
 # ----------------------
 class Store(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="stores"
+    )
     name = models.CharField(max_length=100)
     location = models.TextField(blank=True, null=True)
 
@@ -15,6 +19,10 @@ class Store(models.Model):
 # Category: Product categorization
 # ----------------------
 class Category(models.Model):
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="categories"
+    )
     name = models.CharField(max_length=100)
     # product = models.ForeignKey(Product,)
     description = models.TextField(blank=True, null=True)
@@ -36,6 +44,8 @@ class Category(models.Model):
 # Supplier: Provides products
 # ----------------------
 class Supplier(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="suppliers"
+    )
     name = models.CharField(max_length=100)
     email = models.EmailField(blank=True, null=True, unique=True)
     phone = models.IntegerField(blank=True, null=True)
@@ -54,6 +64,8 @@ class Supplier(models.Model):
 #record info of customers
 
 class Customer(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="customers"
+    )
     name = models.CharField(max_length=100)
     email = models.EmailField(blank=True, null=True, unique=True)
     phone = models.IntegerField(blank=True, null=True)
@@ -72,6 +84,8 @@ class Customer(models.Model):
 # Product: Inventory items
 # ----------------------
 class Product(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="products"
+    )
     sku = models.CharField(max_length=50, unique=True) # sku stand for stock keeping unit
     name = models.CharField(max_length=100)
   

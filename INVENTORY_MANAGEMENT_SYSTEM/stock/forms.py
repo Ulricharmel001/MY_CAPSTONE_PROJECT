@@ -1,17 +1,21 @@
 from django import forms
 from .models import PurchaseOrder, SalesOrder
-from inventory.models import Product, Store
+from inventory.models import Product, Store, Supplier, Customer
 
 class PurchaseOrderForm(forms.ModelForm):
+    supplier = forms.ModelChoiceField(
+        queryset=Supplier.objects.all(),
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+
     class Meta:
         model = PurchaseOrder
-        fields = ['product', 'store', 'quantity', 'unit_price']
+        fields = ['product', 'store', 'supplier', 'quantity', 'unit_price']
         widgets = {
             'product': forms.Select(attrs={'class': 'form-control'}),
             'store': forms.Select(attrs={'class': 'form-control'}),
             'quantity': forms.NumberInput(attrs={'class': 'form-control', 'min': 1}),
             'unit_price': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
-            
         }
 
     def clean_quantity(self):
@@ -26,10 +30,16 @@ class PurchaseOrderForm(forms.ModelForm):
             raise forms.ValidationError("Unit price must be positive")
         return unit_price
 
+
 class SalesOrderForm(forms.ModelForm):
+    customer = forms.ModelChoiceField(
+        queryset=Customer.objects.all(),
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+
     class Meta:
         model = SalesOrder
-        fields = ['product', 'store', 'quantity', 'unit_price']
+        fields = ['product', 'store', 'customer', 'quantity', 'unit_price']
         widgets = {
             'product': forms.Select(attrs={'class': 'form-control'}),
             'store': forms.Select(attrs={'class': 'form-control'}),

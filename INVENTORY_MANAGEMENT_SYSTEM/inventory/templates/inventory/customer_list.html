@@ -3,6 +3,24 @@
 {% block page_title %}Customers{% endblock %}
 
 {% block content %}
+
+<!-- Display Form Errors -->
+{% if form.errors %}
+<div class="alert alert-danger">
+    <ul>
+        {% for field in form %}
+            {% for error in field.errors %}
+                <li>{{ field.label }}: {{ error }}</li>
+            {% endfor %}
+        {% endfor %}
+        {% for error in form.non_field_errors %}
+            <li>{{ error }}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+<!-- Add New Customer Form -->
 <div class="card mb-4 p-4">
   <h5>Add New Customer</h5>
   <form method="POST" class="row g-3">
@@ -17,11 +35,18 @@
   </form>
 </div>
 
+<!-- Customer List Table -->
 <div class="card p-4">
   <h5>All Customers</h5>
   <table class="table table-hover">
     <thead>
-      <tr><th>ID</th><th>Name</th><th>Email</th><th>Phone</th><th>Actions</th></tr>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Phone</th>
+        <th>Actions</th>
+      </tr>
     </thead>
     <tbody>
       {% for customer in customers %}
@@ -41,4 +66,5 @@
     </tbody>
   </table>
 </div>
+
 {% endblock %}
