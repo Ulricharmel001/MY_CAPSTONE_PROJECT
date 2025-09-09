@@ -1,11 +1,6 @@
-# inventory/forms.py
 from django import forms
 from .models import Store, Category, Product, Supplier, Customer, Supplier
-
-
-# ----------------------
 # Django Form for Store
-# ----------------------
 class StoreForm(forms.ModelForm):
     """Form to create or edit a Store"""
     class Meta:
@@ -16,10 +11,7 @@ class StoreForm(forms.ModelForm):
             'location': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Location'}),
         }
 
-
-# ----------------------
-# Django Form for Category
-# ----------------------
+#Form for Category
 class CategoryForm(forms.ModelForm):
     """Form to create or edit a Category"""
     class Meta:
@@ -32,11 +24,7 @@ class CategoryForm(forms.ModelForm):
 
 
 
-
-
-# ----------------------
 # Product Form
-# ----------------------
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
@@ -58,10 +46,7 @@ class ProductForm(forms.ModelForm):
         }
 
 
-
-# ----------------------
-# Customer Form
-# ----------------------
+# Customer Form : Input  customer info
 class CustomerForm(forms.ModelForm):
     class Meta:
         model = Customer
@@ -73,9 +58,8 @@ class CustomerForm(forms.ModelForm):
             'address': forms.Textarea(attrs={'class': 'form-control', 'rows': 2, 'placeholder': 'Address'}),
         }
 
-# ----------------------
-# Supplier Form
-# ----------------------
+# Supplier Form : this is to input supplier information
+
 class SupplierForm(forms.ModelForm):
     class Meta:
         model = Supplier

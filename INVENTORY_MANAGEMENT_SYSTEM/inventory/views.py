@@ -5,9 +5,7 @@ from django.views.generic import ListView, UpdateView, DeleteView
 from .models import Store, Category, Product, Customer, Supplier
 from .forms import StoreForm, CategoryForm, ProductForm, CustomerForm, SupplierForm
 
-# ----------------------
 # Reusable List + Create Mixin
-# ----------------------
 class ListCreateMixin(LoginRequiredMixin, ListView):
     """
     Handles displaying a list of objects and creating a new object via POST.
@@ -25,7 +23,7 @@ class ListCreateMixin(LoginRequiredMixin, ListView):
             context['form'] = self.form_class()
         return context
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request):
         form = self.form_class(request.POST)
         if form.is_valid():
             obj = form.save(commit=False)
@@ -36,10 +34,7 @@ class ListCreateMixin(LoginRequiredMixin, ListView):
         context = self.get_context_data(form=form)
         return self.render_to_response(context)
 
-
-# ----------------------
-# Store Views
-# ----------------------
+# Store Views, performing crud operations for stores
 class StoreListView(ListCreateMixin):
     model = Store
     form_class = StoreForm
@@ -67,9 +62,7 @@ class StoreDeleteView(LoginRequiredMixin, DeleteView):
         return Store.objects.filter(user=self.request.user)
 
 
-# ----------------------
-# Category Views
-# ----------------------
+# Category Views, for running crud operation
 class CategoryListView(ListCreateMixin):
     model = Category
     form_class = CategoryForm
@@ -95,11 +88,7 @@ class CategoryDeleteView(LoginRequiredMixin, DeleteView):
 
     def get_queryset(self):
         return Category.objects.filter(user=self.request.user)
-
-
-# ----------------------
 # Product Views
-# ----------------------
 class ProductListView(ListCreateMixin):
     model = Product
     form_class = ProductForm
@@ -126,10 +115,7 @@ class ProductDeleteView(LoginRequiredMixin, DeleteView):
     def get_queryset(self):
         return Product.objects.filter(user=self.request.user)
 
-
-# ----------------------
 # Customer Views
-# ----------------------
 class CustomerListView(ListCreateMixin):
     model = Customer
     form_class = CustomerForm
@@ -156,13 +142,8 @@ class CustomerDeleteView(LoginRequiredMixin, DeleteView):
     def get_queryset(self):
         return Customer.objects.filter(user=self.request.user)
     
+# Supplier Views, 
 
-
-
-
-# ----------------------
-# Supplier Views
-# ----------------------
 class SupplierListView(ListCreateMixin):
     model = Supplier
     form_class = SupplierForm

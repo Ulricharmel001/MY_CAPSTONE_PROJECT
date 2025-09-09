@@ -1,9 +1,7 @@
 from django.db import models
 from django.conf import settings
 
-# ----------------------
-# Store: Multi-location support
-# ----------------------
+# Store: Multiple store can be craete by a user, when a store is deleted every infor about the store would be deleted
 class Store(models.Model):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="stores"
@@ -14,10 +12,7 @@ class Store(models.Model):
     def __str__(self):
         return self.name
 
-
-# ----------------------
-# Category: Product categorization
-# ----------------------
+# Category: Product categorization, store can have many categories
 class Category(models.Model):
 
     user = models.ForeignKey(
@@ -39,10 +34,7 @@ class Category(models.Model):
     def __str__(self):
         return f"{self.name} ({self.store.name})"
 
-
-# ----------------------
-# Supplier: Provides products
-# ----------------------
+# Supplier: Provides products,  from whom we are buying to refill our store
 class Supplier(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="suppliers"
     )
@@ -61,7 +53,7 @@ class Supplier(models.Model):
 
 
 
-#record info of customers
+#record info of customers, the person buying from  us
 
 class Customer(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="customers"
@@ -79,10 +71,8 @@ class Customer(models.Model):
     def __str__(self):
         return self.name
 
-
-# ----------------------
-# Product: Inventory items
-# ----------------------
+# Product: Inventory items :
+#  "" item we sell , product has unit code sku""   
 class Product(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="products"
     )

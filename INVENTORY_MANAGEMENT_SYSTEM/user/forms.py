@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from .models import CustomUser
 
-# Registration form (with username included)
+# Registration form 
 class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(
         required=True,
@@ -34,7 +34,7 @@ class CustomUserCreationForm(UserCreationForm):
         fields = ["email", "username", "first_name", "last_name", "password1", "password2"]
 
 
-# Login form (still using email to log in)
+# Login form
 class CustomAuthenticationForm(AuthenticationForm):
     username = forms.EmailField(
         label="Email",

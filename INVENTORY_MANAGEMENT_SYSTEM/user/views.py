@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth import login, logout
 from django.contrib import messages
 from .forms import CustomUserCreationForm, CustomAuthenticationForm
 from django.contrib.auth.decorators import login_required
@@ -35,9 +35,6 @@ def logout_view(request):
     logout(request)
     messages.info(request, "You have been logged out.")
     return redirect("login")
-
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
 
 @login_required
 def profile_view(request):

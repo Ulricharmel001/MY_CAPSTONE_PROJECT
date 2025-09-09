@@ -4,9 +4,7 @@ from django.views.generic import ListView, CreateView
 from .models import PurchaseOrder, SalesOrder
 from .forms import PurchaseOrderForm, SalesOrderForm
 
-# ----------------------
-# List all purchases
-# ----------------------
+# List all purchases, all purchase transactions
 class PurchaseOrderListView(LoginRequiredMixin, ListView):
     model = PurchaseOrder
     template_name = 'stock/purchase_list.html'
@@ -16,10 +14,7 @@ class PurchaseOrderListView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         return PurchaseOrder.objects.filter(user=self.request.user)
 
-
-# ----------------------
-# Create a new purchase
-# ----------------------
+# Create a new purchase: render form to create purchase transactionns
 class PurchaseOrderCreateView(LoginRequiredMixin, CreateView):
     model = PurchaseOrder
     form_class = PurchaseOrderForm
@@ -30,10 +25,7 @@ class PurchaseOrderCreateView(LoginRequiredMixin, CreateView):
         form.instance.user = self.request.user
         return super().form_valid(form)
 
-
-# ----------------------
-# List all sales
-# ----------------------
+# List all sales, all available sales in a store
 class SalesOrderListView(LoginRequiredMixin, ListView):
     model = SalesOrder
     template_name = 'stock/sale_list.html'
@@ -43,10 +35,8 @@ class SalesOrderListView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         return SalesOrder.objects.filter(user=self.request.user)
 
-
-# ----------------------
 # Create a new sale
-# ----------------------
+"""this enable user to add sale transaction """
 class SalesOrderCreateView(LoginRequiredMixin, CreateView):
     model = SalesOrder
     form_class = SalesOrderForm
