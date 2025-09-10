@@ -10,7 +10,7 @@ class ListCreateMixin(LoginRequiredMixin, ListView):
     """
     Handles displaying a list of objects and creating a new object via POST.
     """
-    form_class = None  # Must be defined in subclass
+    form_class = None 
     success_url = None
 
     def get_queryset(self):
